@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Culture Générale</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f9;
+    }
+    #quiz {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #submitBtn {
+      background: #2196F3;
+      display: block;
+      margin: 20px auto;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+    input {
+      padding: 8px;
+      margin-bottom: 15px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="quiz">
+    <h2>Quiz Culture Générale</h2>
+
+    <label for="nom">Votre nom :</label>
+    <input type="text" id="nom" placeholder="Entrez votre nom">
+
+    <div class="question">
+      <p>1. Quelle est la capitale d’Haïti ?</p>
+      <button onclick="selectAnswer(0, 'Port-au-Prince')">Port-au-Prince</button>
+      <button onclick="selectAnswer(0, 'Cap-Haïtien')">Cap-Haïtien</button>
+    </div>
+
+    <div class="question">
+      <p>2. Combien de continents existe-t-il ?</p>
+      <button onclick="selectAnswer(1, '5')">5</button>
+      <button onclick="selectAnswer(1, '7')">7</button>
+    </div>
+
+    <div class="question">
+      <p>3. Qui a peint la Joconde ?</p>
+      <button onclick="selectAnswer(2, 'Leonardo da Vinci')">Leonardo da Vinci</button>
+      <button onclick="selectAnswer(2, 'Michelangelo')">Michelangelo</button>
+    </div>
+
+    <button id="submitBtn" onclick="submitQuiz()">Envoyer mes réponses</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    let answers = ["", "", ""];
+    const correctAnswers = ["Port-au-Prince", "7", "Leonardo da Vinci"];
+
+    function selectAnswer(questionIndex, answer) {
+      answers[questionIndex] = answer;
+      console.log("Réponse sélectionnée pour Q" + (questionIndex+1) + ":", answer);
+    }
+
+    function submitQuiz() {
+      let score = 0;
+      for (let i = 0; i < answers.length; i++) {
+        if (answers[i] === correctAnswers[i]) {
+          score++;
+        }
+      }
+
+      let nom = document.getElementById("nom").value || "Anonyme";
+      let data = {
+        nom: nom,
+        score: score,
+        reponses: answers
+      };
+
+      console.log("Données préparées pour envoi:", data);
+
+      // ⚠️ Remplace TON_URL par l’URL de ton Apps Script déployé
+      fetch("https://script.google.com/macros/s/AKfycbxFcnkUr9lsOvlK1hF5q69c_XDBaXgKy46zMZz277X1DuiWW8NR3JACYQ4ZRU3MnPXP/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(response => {
+        console.log("Réponse backend:", response);
+        document.getElementById("result").innerText =
+          "Quiz terminé ! Score: " + score + "/3";
+      })
+      .catch(err => {
+        console.error("Erreur côté frontend:", err);
+        document.getElementById("result").innerText =
+          "Erreur lors de l’envoi. Vérifiez l’URL ou les permissions.";
+      });
+    }
+  </script>
+</body>
+</html>
